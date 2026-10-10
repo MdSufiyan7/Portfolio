@@ -23,16 +23,37 @@ const {
   csrfSynchronisedProtection,
 } = require("./middleware/csrf");
 
+
 const app = express();
-// Trust Render's reverse proxy so secure session cookies work.
+
+// Trust Render's HTTPS reverse proxy for secure session cookies.
 if (process.env.NODE_ENV === "production") {
   app.set("trust proxy", 1);
 }
 
 app.disable("x-powered-by");
 
-// 1. Security headers
-app.use(helmet());
+// Security headers and external media permissions.
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        imgSrc: [
+          "'self'",
+          "data:",
+          "https://res.cloudinary.com",
+          "https://drive.google.com",
+        ],
+        frameSrc: [
+          "'self'",
+          "https://drive.google.com",
+          "https://docs.google.com",
+        ],
+      },
+    },
+  })
+);
+
 
 // 2. CORS
 app.use(
