@@ -37,7 +37,14 @@ export default function Login() {
     setLoading(true);
 
     try {
-      await api.post("/auth/login", { email, password });
+      await initializeCsrf();
+
+await api.post("/auth/login", {
+  email,
+  password,
+});
+
+navigate("/admin/dashboard", { replace: true });
       navigate("/admin/dashboard", { replace: true });
     } catch (err) {
       setError(
